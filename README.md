@@ -15,10 +15,17 @@ open it.
 - [x] Weather-driven risk coloring (Fosberg Fire Weather Index grid)
 - [x] Simplified elliptical wind/terrain-driven spread projection
 - [x] Land cover overlay (ESA WorldCover, labeled as a fuel-type *proxy*, not real fuel data)
-- [ ] Optional: WindNinja terrain-corrected wind — not wired in. Its public API's CORS policy, auth, and
-      latency couldn't be confirmed from this environment (its `robots.txt` blocks automated fetching), so the
-      app deliberately sticks to point wind from Open-Meteo everywhere rather than guess at an unverified
-      integration. See `app.js` for where a real WindNinja call would slot in if the API is confirmed later.
+- [ ] Optional: WindNinja terrain-corrected wind — investigated, not integrated. [firelab/windninja](https://github.com/firelab/windninja)
+      itself is a desktop/CLI/GUI simulation tool, not a hosted service. The two candidate hosted endpoints turned
+      up nothing browser-callable either:
+        - `https://weather.firelab.org/` — TLS connection reset on every attempt (host unreachable from here).
+        - `https://ninjastorm.firelab.org/windninjaapi/` — this is Doxygen-generated reference docs for the
+          WindNinja **C++ library API** (classes like `ninjaArmy`), not a REST/HTTP API. Its own web app at
+          `/windninja/` is a marketing/download page with no job-submission or results endpoint.
+      Running real WindNinja simulations requires the compiled model on a server with DEM/weather inputs, which
+      is a backend — outside this project's static-site constraint. The app sticks to Open-Meteo point wind
+      everywhere; if USDA Forest Service ever stands up a public hosted API, `computeSlopePercent`/`fetchWind`
+      in `app.js` are the spots to add it, upstream of the FFWI grid and spread-ellipse calculations.
 
 ## How it's built
 
